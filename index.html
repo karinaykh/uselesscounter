@@ -31,24 +31,25 @@
             overflow: hidden;
             transition: filter 0.3s ease-in-out, background 2s ease-in-out;
             border: 1px solid #e5e7eb; /* Light border */
-            animation: slideIn 0.7s ease-out, pulseBg 10s infinite alternate, float 6s ease-in-out infinite;
+            animation: slideIn 0.7s ease-out,
+             pulseBg 10s infinite alternate,
+             float 6s ease-in-out infinite;
         }
 
-        @keyframes pulseBg {
-            0% { background-color: #ffffff; }
-            50% { background-color: #f1f5f9; }
-            100% { background-color: #ffffff; }
-        }
+            @keyframes pulseBg {
+              0%, 100% { background-color: #ffffff; }
+              50%      { background-color: #f1f5f9; }
+            }
 
-        @keyframes slideIn {
-            from { transform: translateY(-20px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
-        }
+            @keyframes slideIn {
+              from { transform: translateY(-20px); opacity: 0; }
+              to   { transform: translateY(0);     opacity: 1; }
+            }
 
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
-        }
+            @keyframes float {
+              0%, 100% { transform: translateY(0); }
+              50%      { transform: translateY(-10px); }
+            }
 
         .container.modal-open {
             filter: blur(8px) brightness(0.7);
