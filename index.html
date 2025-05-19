@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Original Genius Retention Tracker - Max Fun Edition</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background-color: #111827; /* Darker background for contrast */
+            color: #d1d5db; /* Tailwind gray-300 */
+            text-align: center;
+            padding: 1rem;
+            overflow: hidden;
+        }
+        .container {
+            background-color: #1f2937; /* Tailwind gray-800 */
+            padding: 2rem;
+            border-radius: 1rem; /* Tailwind rounded-2xl */
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3), 0 10px 10px -5px rgba(0,0,0,0.2); /* Enhanced shadow */
+            width: 100%;
+            max-width: 550px; /* Slightly wider */
+            position: relative;
+            overflow: hidden;
+            transition: filter 0.3s ease-in-out, background 2s ease-in-out;
+            border: 1px solid #374151; /* Tailwind gray-700 border */
+            animation: pulseBg 10s infinite alternate;
+        }
+
+        @keyframes pulseBg {
+            0% { background-color: #1f2937; } /* gray-800 */
+            50% { background-color: #374151; } /* gray-700 */
+            100% { background-color: #1f2937; } /* gray-800 */
+        }
+
+        .container.modal-open {
+            filter: blur(8px) brightness(0.7);
+        }
+        .percentage-display {
+            font-size: 5rem; /* Even bigger */
+            font-weight: 700; /* Tailwind font-bold */
+            margin: 1.5rem 0;
+            transition: color 0.3s ease-in-out, transform 0.3s ease-in-out;
+            text-shadow: 0 0 10px rgba(255,255,255,0.1);
+        }
+        .status-message-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 4em;
+            margin-bottom: 1.5rem;
+        }
+        .status-emoji {
+            font-size: 1.5rem; /* Tailwind text-2xl */
+            margin-right: 0.5rem;
+            transition: transform 0.3s ease-in-out;
+        }
+        .status-text {
+            font-size: 1.125rem; /* Tailwind text-lg */
+            color: #9ca3af; /* Tailwind gray-400 */
+            transition: opacity 0.3s ease-in-out;
+        }
+        .action-button, .reset-button, .modal-send-button {
+            color: white;
+            font-weight: 700; /* Bolder */
+            padding: 0.85rem 1.75rem; /* Slightly larger padding */
+            border-radius: 0.75rem; /* More rounded */
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.2), 0 2px 4px -1px rgba(0,0,0,0.12), inset 0 -2px 0px rgba(0,0,0,0.2);
+            margin-top: 0.75rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        .action-button {
+            background: linear-gradient(145deg, #f87171, #ef4444); /* Red gradient */
+        }
+        .action-button:hover {
+            background: linear-gradient(145deg, #ef4444, #dc2626);
+            box-shadow: 0 6px 10px -1px rgba(0,0,0,0.3), 0 4px 6px -1px rgba(0,0,0,0.15), inset 0 -2px 0px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+        }
+        .action-button:disabled {
+            background: #4b5563; /* Gray-600 */
+            cursor: not-allowed;
+            box-shadow: 0 2px 3px -1px rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.06), inset 0 -1px 0px rgba(0,0,0,0.1);
+            transform: translateY(0);
+        }
+        .action-button:active:not(:disabled) {
+            transform: translateY(1px) scale(0.97);
+            box-shadow: 0 2px 3px -1px rgba(0,0,0,0.1), 0 1px 2px -1px rgba(0,0,0,0.06), inset 0 -1px 0px rgba(0,0,0,0.1);
+        }
+        .reset-button {
+            background: linear-gradient(145deg, #6b7280, #4b5563); /* Gray gradient */
+            display: none;
+        }
+        .reset-button:hover {
+            background: linear-gradient(145deg, #4b5563, #374151);
+            transform: translateY(-2px);
+        }
+        .footer-text {
+            margin-top: 2rem;
+            font-size: 0.875rem; /* Tailwind text-sm */
+            color: #6b7280; /* Tailwind gray-500 */
+        }
+
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
+        .shake-effect { animation: shake 0.25s ease-in-out; }
+
+        @keyframes celebrateText { 0%, 100% { transform: scale(1) rotate(0deg); } 25% {transform: scale(1.1) rotate(-3deg);} 50% { transform: scale(1.2) rotate(3deg); } 75% {transform: scale(1.1) rotate(0deg);}}
+        .celebrate-text-animation { animation: celebrateText 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
+
+        .confetti-particle { position: fixed; /* Changed to fixed for viewport positioning */ width: 10px; height: 10px; opacity: 0; animation: fall 3s forwards; z-index: 2000; /* Above modal overlay */ }
+        @keyframes fall {
+            0% { transform: translateY(-50px) translateX(0px) rotateZ(0deg) scale(0.5); opacity: 1; }
+            100% { transform: translateY(100vh) translateX(calc(var(--random-x) * 1px)) rotateZ(720deg) scale(1); opacity: 0; }
+        }
+
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+        .modal-content { background-color: #1f2937; /* Dark modal */ color: #d1d5db; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); width: 100%; max-width: 520px; text-align: left; position: relative; border: 1px solid #4b5563; }
+        .modal-title { font-size: 2rem; font-weight: 700; color: #f3f4f6; text-align: center; margin-bottom: 0.75rem; }
+        .modal-subtitle { font-size: 1.125rem; color: #9ca3af; text-align: center; margin-bottom: 2rem; }
+        .letter-title { font-size: 1.25rem; font-weight: 600; color: #e5e7eb; margin-top: 1rem; margin-bottom: 1rem; border-bottom: 1px solid #4b5563; padding-bottom: 0.75rem; }
+        .letter-body p { margin-bottom: 1rem; line-height: 1.7; color: #d1d5db; }
+        .modal-send-button { background-image: linear-gradient(to right, #ef4444, #c026d3); /* Red to Purple gradient */ display: block; margin: 2rem auto 0; }
+        .modal-send-button:hover { background-image: linear-gradient(to right, #dc2626, #a31caf); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div class="container" id="trackerContainer">
+        <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-3">The 'Original Genius'</h1>
+        <h2 class="text-3xl font-semibold text-indigo-400 mb-8">Retention Tracker</h2>
+
+        <p class="text-gray-400 mb-4">
+            Because some ideas are just too good to be "improved" into oblivion.
+        </p>
+        <p class="text-gray-500 text-sm mb-8">
+            Current baseline: Keep <strong>at least 70%</strong> of the original brilliance.
+        </p>
+
+        <div id="percentageDisplay" class="percentage-display">70%</div>
+        <div class="status-message-container">
+            <span id="statusEmoji" class="status-emoji">😐</span>
+            <span id="statusText" class="status-text">Original vision holding strong!</span>
+        </div>
+
+        <button id="angerButton" class="action-button">
+            Boss 'suggested' changes... (+1%)
+        </button>
+        <button id="resetButton" class="reset-button">
+            Start Over?
+        </button>
+
+        <p class="footer-text">
+            Rooting for the original cut. Always. 😉
+        </p>
+    </div>
+
+    <div id="resignationModal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 class="modal-title">🎉 CONGRATULATIONS! 🎉</h3>
+            <p class="modal-subtitle">You've reached 100% original content!</p>
+
+            <div class="letter-title">Official Resignation Letter</div>
+            <div class="letter-body">
+                <p>Dear Boss,</p>
+                <p>After careful consideration, I've decided it's time for me to pursue new opportunities elsewhere. Please consider this my formal resignation.</p>
+                <p>The constant rewrites were the final straw. I'm keeping 100% of my original content... and taking it with me.</p>
+                <p>Sincerely,</p>
+                <p>Your Former Employee</p>
+            </div>
+            <button id="modalSendButton" class="modal-send-button">SEND!</button>
+        </div>
+    </div>
+
+    <script>
+        const INITIAL_PERCENTAGE = 70;
+        let currentPercentage = INITIAL_PERCENTAGE;
+
+        const percentageDisplay = document.getElementById('percentageDisplay');
+        const statusEmoji = document.getElementById('statusEmoji');
+        const statusText = document.getElementById('statusText');
+        const angerButton = document.getElementById('angerButton');
+        const resetButton = document.getElementById('resetButton');
+        const trackerContainer = document.getElementById('trackerContainer');
+        const resignationModal = document.getElementById('resignationModal');
+        const modalSendButton = document.getElementById('modalSendButton'); // Changed ID
+
+        const confettiColors = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#a855f7', '#ec4899'];
+
+        // Tone.js Synths - Initialize after user interaction if needed
+        let clickSynth, celebrationSynth;
+
+        function initializeSounds() {
+            if (Tone.context.state !== 'running') {
+                Tone.start(); // Request to start audio context
+            }
+            clickSynth = new Tone.Synth({
+                oscillator: { type: 'triangle' },
+                envelope: { attack: 0.005, decay: 0.1, sustain: 0.01, release: 0.1 }
+            }).toDestination();
+
+            celebrationSynth = new Tone.PolySynth(Tone.Synth, {
+                oscillator: { type: 'fatsawtooth' },
+                envelope: { attack: 0.05, decay: 0.2, sustain: 0.2, release: 0.3 },
+                volume: -10
+            }).toDestination();
+        }
+        
+        // Call initializeSounds on first user interaction (e.g., button click)
+        // or on window load if allowed by browser. For robustness, often best on interaction.
+        let soundsInitialized = false;
+
+
+        function updateDisplay() {
+            percentageDisplay.textContent = currentPercentage + '%';
+            let newStatus = "";
+            let newButtonText = "";
+            let percentageColor = '#818cf8'; // Default Indigo-400 (light theme)
+            let emoji = '😐'; // Default emoji
+
+            if (currentPercentage < INITIAL_PERCENTAGE) {
+                newStatus = "Dipping below baseline! Reclaim the genius!";
+                percentageColor = '#f87171'; // Red-400
+                newButtonText = "RESCUE MISSION! (+1%)";
+                emoji = '😟';
+            } else if (currentPercentage === INITIAL_PERCENTAGE) {
+                newStatus = `Holding strong at ${INITIAL_PERCENTAGE}%! Keep it up!`;
+                newButtonText = "Boss 'suggested' changes... (+1%)";
+                emoji = '😐';
+            } else if (currentPercentage > INITIAL_PERCENTAGE && currentPercentage <= 80) {
+                newStatus = "Steadily reclaiming the masterpiece!";
+                percentageColor = '#60a5fa'; // Blue-400
+                newButtonText = "MORE ORIGINALITY! (+1%)";
+                emoji = '🙂';
+            } else if (currentPercentage > 80 && currentPercentage < 90) {
+                newStatus = "The true vision is shining through!";
+                percentageColor = '#34d399'; // Emerald-400
+                newButtonText = "ALMOST THERE! (+1%)";
+                emoji = '😊';
+            } else if (currentPercentage >= 90 && currentPercentage < 100) {
+                newStatus = "So close to 100% pure, unadulterated genius!";
+                percentageColor = '#a78bfa'; // Violet-400
+                newButtonText = "FINAL PUSH! (+1%)";
+                emoji = '🤩';
+            } else if (currentPercentage === 100) {
+                newStatus = "100% ORIGINAL GENIUS! Time to hit 'SEND!' on that... idea? 😉";
+                percentageColor = '#facc15'; // Yellow-400
+                newButtonText = "PERFECTION!";
+                emoji = '🥳';
+                angerButton.disabled = true;
+                resetButton.style.display = 'inline-block';
+                celebrateMilestone();
+            } else { 
+                newStatus = `BEYOND 100%?! ${currentPercentage}%! Unstoppable!`;
+                percentageColor = '#ec4899'; // Pink-500
+                newButtonText = "LEGENDARY!";
+                emoji = '🤯';
+                angerButton.disabled = true;
+                resetButton.style.display = 'inline-block';
+            }
+
+            statusText.textContent = newStatus;
+            statusEmoji.textContent = emoji;
+            statusEmoji.style.transform = 'scale(1.2)';
+            setTimeout(() => statusEmoji.style.transform = 'scale(1)', 150);
+
+            angerButton.textContent = newButtonText;
+            percentageDisplay.style.color = percentageColor;
+        }
+
+        function screenShake() {
+            trackerContainer.classList.add('shake-effect');
+            setTimeout(() => trackerContainer.classList.remove('shake-effect'), 250);
+        }
+        
+        function createConfettiParticle() {
+            const particle = document.createElement('div');
+            particle.classList.add('confetti-particle');
+            
+            const randomColor = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+            particle.style.backgroundColor = randomColor;
+            
+            const startX = Math.random() * window.innerWidth;
+            particle.style.left = startX + 'px';
+            particle.style.top = '-20px'; // Start above screen
+
+            // For the fall animation, to make it spread out
+            const randomXEnd = (Math.random() - 0.5) * (window.innerWidth / 2);
+            particle.style.setProperty('--random-x', randomXEnd);
+
+
+            const size = Math.random() * 10 + 6; // 6px to 16px
+            particle.style.width = size + 'px';
+            particle.style.height = size + 'px';
+            
+            const fallDuration = Math.random() * 2.5 + 2; 
+            particle.style.animationDuration = fallDuration + 's';
+
+            document.body.appendChild(particle);
+            
+            setTimeout(() => particle.remove(), fallDuration * 1000 + 500); // Add buffer for animation
+        }
+
+        function celebrateMilestone() {
+            if (soundsInitialized && celebrationSynth) {
+                celebrationSynth.triggerAttackRelease(["C4", "E4", "G4", "C5"], "0.5s");
+            }
+            percentageDisplay.classList.add('celebrate-text-animation');
+            setTimeout(() => percentageDisplay.classList.remove('celebrate-text-animation'), 800);
+
+            for (let i = 0; i < 100; i++) { // MOAR CONFETTI!
+                setTimeout(() => createConfettiParticle(), i * 20); 
+            }
+            showModal();
+        }
+
+        function showModal() {
+            resignationModal.style.display = 'flex';
+            trackerContainer.classList.add('modal-open');
+        }
+
+        function hideModal() {
+            resignationModal.style.display = 'none';
+            trackerContainer.classList.remove('modal-open');
+        }
+
+        angerButton.addEventListener('click', () => {
+            if (!soundsInitialized) {
+                initializeSounds();
+                soundsInitialized = true;
+            }
+            if (soundsInitialized && clickSynth) {
+                clickSynth.triggerAttackRelease('C5', '8n');
+            }
+
+            if (currentPercentage < 100) { 
+                currentPercentage++;
+                updateDisplay();
+                screenShake();
+            } else if (currentPercentage === 100 && !angerButton.disabled) { // Edge case if somehow clicked at 100 before disabled
+                updateDisplay(); // Ensure celebration is triggered
+            }
+        });
+
+        resetButton.addEventListener('click', () => {
+            currentPercentage = INITIAL_PERCENTAGE;
+            angerButton.disabled = false;
+            resetButton.style.display = 'none';
+            const existingConfetti = document.body.querySelectorAll('.confetti-particle');
+            existingConfetti.forEach(c => c.remove());
+            hideModal(); 
+            updateDisplay(); 
+        });
+
+        modalSendButton.addEventListener('click', () => { // Changed ID
+            // For now, "SEND!" just closes the modal.
+            // In a real scenario, this could trigger an email, a Slack message, or just more confetti!
+            hideModal();
+            // Maybe a little "Sent!" confirmation? For now, just close.
+        });
+
+        resignationModal.addEventListener('click', (event) => {
+            if (event.target === resignationModal) { 
+                hideModal();
+            }
+        });
+
+        window.onload = () => {
+            updateDisplay();
+            // Attempt to initialize sounds on load, but interaction is more reliable
+            // If you want sounds immediately, you might need a "Click to Start" overlay
+            // For simplicity here, we initialize on first angerButton click.
+        };
+    </script>
+</body>
+</html>
