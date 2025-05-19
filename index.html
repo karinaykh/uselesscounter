@@ -14,14 +14,14 @@
             align-items: center;
             justify-content: center;
             min-height: 100vh;
-            background-color: #111827; /* Darker background for contrast */
-            color: #d1d5db; /* Tailwind gray-300 */
+            background-color: #f8fafc; /* Light background */
+            color: #1f2937; /* Tailwind gray-800 */
             text-align: center;
             padding: 1rem;
             overflow: hidden;
         }
         .container {
-            background-color: #1f2937; /* Tailwind gray-800 */
+            background-color: #ffffff; /* Light container */
             padding: 2rem;
             border-radius: 1rem; /* Tailwind rounded-2xl */
             box-shadow: 0 20px 25px -5px rgba(0,0,0,0.3), 0 10px 10px -5px rgba(0,0,0,0.2); /* Enhanced shadow */
@@ -30,14 +30,24 @@
             position: relative;
             overflow: hidden;
             transition: filter 0.3s ease-in-out, background 2s ease-in-out;
-            border: 1px solid #374151; /* Tailwind gray-700 border */
-            animation: pulseBg 10s infinite alternate;
+            border: 1px solid #e5e7eb; /* Light border */
+            animation: slideIn 0.7s ease-out, pulseBg 10s infinite alternate, float 6s ease-in-out infinite;
         }
 
         @keyframes pulseBg {
-            0% { background-color: #1f2937; } /* gray-800 */
-            50% { background-color: #374151; } /* gray-700 */
-            100% { background-color: #1f2937; } /* gray-800 */
+            0% { background-color: #ffffff; }
+            50% { background-color: #f1f5f9; }
+            100% { background-color: #ffffff; }
+        }
+
+        @keyframes slideIn {
+            from { transform: translateY(-20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
         }
 
         .container.modal-open {
@@ -64,7 +74,7 @@
         }
         .status-text {
             font-size: 1.125rem; /* Tailwind text-lg */
-            color: #9ca3af; /* Tailwind gray-400 */
+            color: #475569; /* Tailwind slate-600 */
             transition: opacity 0.3s ease-in-out;
         }
         .action-button, .reset-button, .modal-send-button {
@@ -82,11 +92,6 @@
         }
         .action-button {
             background: linear-gradient(145deg, #f87171, #ef4444); /* Red gradient */
-        }
-        .action-button:hover {
-            background: linear-gradient(145deg, #ef4444, #dc2626);
-            box-shadow: 0 6px 10px -1px rgba(0,0,0,0.3), 0 4px 6px -1px rgba(0,0,0,0.15), inset 0 -2px 0px rgba(0,0,0,0.2);
-            transform: translateY(-2px);
         }
         .action-button:disabled {
             background: #4b5563; /* Gray-600 */
@@ -109,7 +114,7 @@
         .footer-text {
             margin-top: 2rem;
             font-size: 0.875rem; /* Tailwind text-sm */
-            color: #6b7280; /* Tailwind gray-500 */
+            color: #64748b; /* Tailwind slate-500 */
         }
 
         @keyframes shake { 0%, 100% { transform: translateX(0); } 25% { transform: translateX(-5px); } 50% { transform: translateX(5px); } 75% { transform: translateX(-3px); } }
@@ -118,42 +123,75 @@
         @keyframes celebrateText { 0%, 100% { transform: scale(1) rotate(0deg); } 25% {transform: scale(1.1) rotate(-3deg);} 50% { transform: scale(1.2) rotate(3deg); } 75% {transform: scale(1.1) rotate(0deg);}}
         .celebrate-text-animation { animation: celebrateText 0.8s cubic-bezier(0.68, -0.55, 0.27, 1.55); }
 
-        .confetti-particle { position: fixed; /* Changed to fixed for viewport positioning */ width: 10px; height: 10px; opacity: 0; animation: fall 3s forwards; z-index: 2000; /* Above modal overlay */ }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .percentage-pop { animation: pop 0.3s ease-out; }
+
+        @keyframes rainbow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        .rainbow-text {
+            background-size: 200% 200%;
+            animation: rainbow 5s linear infinite;
+        }
+
+        @keyframes wiggle {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(3deg); }
+            75% { transform: rotate(-3deg); }
+        }
+        .action-button:hover {
+            background: linear-gradient(145deg, #ef4444, #dc2626);
+            box-shadow: 0 6px 10px -1px rgba(0,0,0,0.3), 0 4px 6px -1px rgba(0,0,0,0.15), inset 0 -2px 0px rgba(0,0,0,0.2);
+            transform: translateY(-2px);
+            animation: wiggle 0.3s ease-in-out;
+        }
+
+        .confetti-particle { position: fixed; width: 10px; height: 10px; opacity: 0; animation: fall var(--fall-duration,3s) forwards, spin var(--spin-duration,1s) linear infinite; z-index: 2000; }
         @keyframes fall {
             0% { transform: translateY(-50px) translateX(0px) rotateZ(0deg) scale(0.5); opacity: 1; }
             100% { transform: translateY(100vh) translateX(calc(var(--random-x) * 1px)) rotateZ(720deg) scale(1); opacity: 0; }
         }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
-        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.75); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
-        .modal-content { background-color: #1f2937; /* Dark modal */ color: #d1d5db; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5); width: 100%; max-width: 520px; text-align: left; position: relative; border: 1px solid #4b5563; }
-        .modal-title { font-size: 2rem; font-weight: 700; color: #f3f4f6; text-align: center; margin-bottom: 0.75rem; }
-        .modal-subtitle { font-size: 1.125rem; color: #9ca3af; text-align: center; margin-bottom: 2rem; }
-        .letter-title { font-size: 1.25rem; font-weight: 600; color: #e5e7eb; margin-top: 1rem; margin-bottom: 1rem; border-bottom: 1px solid #4b5563; padding-bottom: 0.75rem; }
-        .letter-body p { margin-bottom: 1rem; line-height: 1.7; color: #d1d5db; }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 1rem; }
+        .modal-content { background-color: #ffffff; color: #1f2937; padding: 2.5rem; border-radius: 1rem; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.2); width: 100%; max-width: 520px; text-align: left; position: relative; border: 1px solid #e5e7eb; }
+        .modal-title { font-size: 2rem; font-weight: 700; color: #1f2937; text-align: center; margin-bottom: 0.75rem; }
+        .modal-subtitle { font-size: 1.125rem; color: #475569; text-align: center; margin-bottom: 2rem; }
+        .letter-title { font-size: 1.25rem; font-weight: 600; color: #1f2937; margin-top: 1rem; margin-bottom: 1rem; border-bottom: 1px solid #e5e7eb; padding-bottom: 0.75rem; }
+        .letter-body p { margin-bottom: 1rem; line-height: 1.7; color: #374151; }
         .modal-send-button { background-image: linear-gradient(to right, #ef4444, #c026d3); /* Red to Purple gradient */ display: block; margin: 2rem auto 0; }
-        .modal-send-button:hover { background-image: linear-gradient(to right, #dc2626, #a31caf); transform: translateY(-2px); }
+        .modal-send-button:hover { background-image: linear-gradient(to right, #dc2626, #a31caf); transform: translateY(-2px); animation: wiggle 0.3s ease-in-out; }
     </style>
 </head>
 <body>
     <div class="container" id="trackerContainer">
-        <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-3">The 'Original Genius'</h1>
+        <h1 class="text-4xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 mb-3 rainbow-text">The 'Original Genius'</h1>
         <h2 class="text-3xl font-semibold text-indigo-400 mb-8">Retention Tracker</h2>
 
-        <p class="text-gray-400 mb-4">
-            Because some ideas are just too good to be "improved" into oblivion.
+        <p class="text-gray-600 mb-4">
+            Because some ideas deserve a parade, not a "makeover".
         </p>
         <p class="text-gray-500 text-sm mb-8">
-            Current baseline: Keep <strong>at least 70%</strong> of the original brilliance.
+            Current baseline: keep <strong>at least 70%</strong> of the original brilliance.
         </p>
 
         <div id="percentageDisplay" class="percentage-display">70%</div>
         <div class="status-message-container">
             <span id="statusEmoji" class="status-emoji">😐</span>
-            <span id="statusText" class="status-text">Original vision holding strong!</span>
+            <span id="statusText" class="status-text">Baseline secure and ready for glory!</span>
         </div>
 
         <button id="angerButton" class="action-button">
-            Boss 'suggested' changes... (+1%)
+            Manager has a 'fun' idea... (+1%)
         </button>
         <button id="resetButton" class="reset-button">
             Start Over?
@@ -228,41 +266,41 @@
             let emoji = '😐'; // Default emoji
 
             if (currentPercentage < INITIAL_PERCENTAGE) {
-                newStatus = "Dipping below baseline! Reclaim the genius!";
+                newStatus = "Code meltdown! Quick, rescue the brilliance!";
                 percentageColor = '#f87171'; // Red-400
-                newButtonText = "RESCUE MISSION! (+1%)";
+                newButtonText = "SOUND THE ALARMS! (+1%)";
                 emoji = '😟';
             } else if (currentPercentage === INITIAL_PERCENTAGE) {
-                newStatus = `Holding strong at ${INITIAL_PERCENTAGE}%! Keep it up!`;
-                newButtonText = "Boss 'suggested' changes... (+1%)";
+                newStatus = `Baseline secured! Beware incoming 'suggestions'.`;
+                newButtonText = "Manager has a 'fun' idea... (+1%)";
                 emoji = '😐';
             } else if (currentPercentage > INITIAL_PERCENTAGE && currentPercentage <= 80) {
-                newStatus = "Steadily reclaiming the masterpiece!";
+                newStatus = "Reclaiming genius, one 'unhelpful tip' at a time!";
                 percentageColor = '#60a5fa'; // Blue-400
-                newButtonText = "MORE ORIGINALITY! (+1%)";
+                newButtonText = "More genius, less feedback! (+1%)";
                 emoji = '🙂';
             } else if (currentPercentage > 80 && currentPercentage < 90) {
-                newStatus = "The true vision is shining through!";
+                newStatus = "That sparkle is pure genius breaking free!";
                 percentageColor = '#34d399'; // Emerald-400
-                newButtonText = "ALMOST THERE! (+1%)";
+                newButtonText = "Nearly legendary! (+1%)";
                 emoji = '😊';
             } else if (currentPercentage >= 90 && currentPercentage < 100) {
-                newStatus = "So close to 100% pure, unadulterated genius!";
+                newStatus = "99% brilliance, 1% chance of manager interference!";
                 percentageColor = '#a78bfa'; // Violet-400
-                newButtonText = "FINAL PUSH! (+1%)";
+                newButtonText = "Almost at genius overload! (+1%)";
                 emoji = '🤩';
             } else if (currentPercentage === 100) {
-                newStatus = "100% ORIGINAL GENIUS! Time to hit 'SEND!' on that... idea? 😉";
+                newStatus = "100% Original Genius! Frame it and ship it!";
                 percentageColor = '#facc15'; // Yellow-400
-                newButtonText = "PERFECTION!";
+                newButtonText = "MASTERPIECE!";
                 emoji = '🥳';
                 angerButton.disabled = true;
                 resetButton.style.display = 'inline-block';
                 celebrateMilestone();
-            } else { 
-                newStatus = `BEYOND 100%?! ${currentPercentage}%! Unstoppable!`;
+            } else {
+                newStatus = `OVERLOAD! ${currentPercentage}% genius can't be contained!`;
                 percentageColor = '#ec4899'; // Pink-500
-                newButtonText = "LEGENDARY!";
+                newButtonText = "IMMORTAL!";
                 emoji = '🤯';
                 angerButton.disabled = true;
                 resetButton.style.display = 'inline-block';
@@ -272,6 +310,9 @@
             statusEmoji.textContent = emoji;
             statusEmoji.style.transform = 'scale(1.2)';
             setTimeout(() => statusEmoji.style.transform = 'scale(1)', 150);
+
+            percentageDisplay.classList.add('percentage-pop');
+            setTimeout(() => percentageDisplay.classList.remove('percentage-pop'), 300);
 
             angerButton.textContent = newButtonText;
             percentageDisplay.style.color = percentageColor;
@@ -302,8 +343,10 @@
             particle.style.width = size + 'px';
             particle.style.height = size + 'px';
             
-            const fallDuration = Math.random() * 2.5 + 2; 
-            particle.style.animationDuration = fallDuration + 's';
+            const fallDuration = Math.random() * 2.5 + 2;
+            const spinDuration = Math.random() * 1 + 0.5;
+            particle.style.setProperty('--fall-duration', fallDuration + 's');
+            particle.style.setProperty('--spin-duration', spinDuration + 's');
 
             document.body.appendChild(particle);
             
